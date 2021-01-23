@@ -662,7 +662,8 @@ def hist_multi(X, bins=10, fig=None, ax=None, figsize=None, dpi=100,
                nan_warning=False, showmeans=True, showmedians=False, vert=True,
                data_names=[], rot=45, name_ax_label=None, data_ax_label=None,
                sort_by=None, title=None, show_vals=True, show_pct_diff=False,
-               baseline_data_index=0, legend_loc='best', **extra_kwargs):
+               baseline_data_index=0, legend_loc='best',
+               show_counts_on_data_ax=True, **extra_kwargs):
     '''
     Generate multiple histograms, one for each data set within ``X``.
 
@@ -749,6 +750,8 @@ def hist_multi(X, bins=10, fig=None, ax=None, figsize=None, dpi=100,
         differences.
     legend_loc : str
         The location specification for the legend.
+    show_counts_on_data_ax : bool
+        Whether to show counts besides the histograms.
     **extra_kwargs : dict
         Other keyword arguments to be passed to ``matplotlib.pyplot.bar()``.
 
@@ -786,6 +789,7 @@ def hist_multi(X, bins=10, fig=None, ax=None, figsize=None, dpi=100,
                                  show_pct_diff=show_pct_diff,
                                  baseline_data_index=baseline_data_index,
                                  legend_loc=legend_loc,
+                                 show_counts_on_data_ax=show_counts_on_data_ax,
                                  **extra_kwargs)
 
     return fig, ax
@@ -796,7 +800,9 @@ def _hist_multi_helper(data_with_names, bins=10, fig=None, ax=None,
                        vert=False, rot=45, data_ax_label=None,
                        name_ax_label=None, show_legend=True, title=None,
                        show_vals=True, show_pct_diff=False,
-                       baseline_data_index=0, legend_loc='best', **extra_kwargs):
+                       baseline_data_index=0, legend_loc='best',
+                       show_counts_on_data_ax=True,
+                       **extra_kwargs):
     '''
     Helper function to multi_hist().
 
@@ -805,78 +811,11 @@ def _hist_multi_helper(data_with_names, bins=10, fig=None, ax=None,
     data_with_names : OrderedDict<str, list>
         A dictionary whose keys are the names of the categories and values are
         the actual data.
-    bins : int or sequence or str
-        If an integer is given, the whole range of data (i.e., all the numbers
-        within ``X``) is divided into ``bins`` segments. If sequence or str,
-        they will be passed to the ``bins`` argument of ``matplotlib.pyplot.hist()``.
-    fig : matplotlib.figure.Figure or ``None``
-        Figure object. If None, a new figure will be created.
-    ax : matplotlib.axes._subplots.AxesSubplot or ``None``
-        Axes object. If None, a new axes will be created.
-    figsize: (float, float)
-        Figure size in inches, as a tuple of two numbers. The figure
-        size of ``fig`` (if not ``None``) will override this parameter.
-    dpi : float
-        Figure resolution. The dpi of ``fig`` (if not ``None``) will override
-        this parameter.
-    nan_warning : bool
-        Whether to show a warning if there are NaN values in the data.
-    showmeans : bool
-        Whether to show the mean values of each data group.
-    showmedians : bool
-        Whether to show the median values of each data group.
-    vert : bool
-        Whether to show the "base" of the histograms as vertical.
-    data_names : list<str>, ``[]``, or ``None``
-        The names of each data set, to be shown as the axis tick label of each
-        data set. If ``[]`` or ``None``, it will be determined automatically.
-        If ``X`` is a:
-            - numpy.ndarray:
-                + data_names = ['data_0', 'data_1', 'data_2', ...]
-            - pandas.Series:
-                + data_names = X.name
-            - pd.DataFrame:
-                + data_names = list(X.columns)
-            - dict:
-                + data_names = list(X.keys())
-    rot : float
-        The rotation (in degrees) of the data_names when shown as the tick
-        labels. If vert is False, rot has no effect.
-    name_ax_label : str
-        The label of the "name axis". ("Name axis" is the axis along which
-        different violins are presented.)
-    data_ax_label : str
-        The labels of the "data axis". ("Data axis" is the axis along which
-        the data values are presented.)
-    sort_by : {'name', 'mean', 'median', ``None``}
-        Option to sort the different data groups in ``X`` in the violin plot.
-        ``None`` means no sorting, keeping the violin plot order as provided;
-        'mean' and 'median' mean sorting the violins according to the
-        mean/median values of each data group; 'name' means sorting the violins
-        according to the names of the groups.
-    title : str
-        The title of the plot.
-    show_vals : bool
-        Whether to show mean and/or median values along the mean/median bars.
-        Only effective if ``showmeans`` and/or ``showmedians`` are turned on.
-    show_pct_diff : bool
-        Whether to show percent difference of mean and/or median values
-        between different data sets. Only effective when ``show_vals`` is
-        set to ``True``.
-    baseline_data_index : int
-        Which data set is considered the "baseline" when showing percent
-        differences.
-    legend_loc : str
-        The location specification for the legend.
-    **extra_kwargs : dict
-        Other keyword arguments to be passed to ``matplotlib.pyplot.bar()``.
+    (Other parameters are the same as multi_hist().)
 
     Returns
     -------
-    fig : matplotlib.figure.Figure
-        The figure object being created or being passed into this function.
-    ax : matplotlib.axes._subplots.AxesSubplot
-        The axes object being created or being passed into this function.
+    Same sa multi_hist()
     '''
     data = []
     data_names = []
@@ -891,17 +830,23 @@ def _hist_multi_helper(data_with_names, bins=10, fig=None, ax=None,
         l2 = 3.5
         figsize = (l1, l2) if vert else (l2, l1)
 
+    MAX_RELATIVE_BAR_HEIGHT = 0.8  # limit tallest bar height to 90%
+
+    fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
+
     mean_vals = []
     median_vals = []
-    fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
+    max_count_each_dataset = []
     for i, data_i in enumerate(data):
         freq_bar_heights, bin_edges = np.histogram(data_i, bins=bins)
         max_bar_height = max(freq_bar_heights)
         bar_full_width = bin_edges[1] - bin_edges[0]
         bar_half_width = bar_full_width / 2.0
 
+        max_count_each_dataset.append(freq_bar_heights.max())
+
         bin_centers = bin_edges[:-1] + bar_half_width
-        bar_heights = freq_bar_heights / max_bar_height / 1.1  # leave some space between groups
+        bar_heights = freq_bar_heights / max_bar_height * MAX_RELATIVE_BAR_HEIGHT
         extra_kwarg = {'bottom': i + 1} if not vert else {'left': i + 1}
 
         plot_bar_func = ax.bar if not vert else ax.barh  # flipped compared to violin plot!
@@ -1015,4 +960,40 @@ def _hist_multi_helper(data_with_names, bins=10, fig=None, ax=None,
         ax.legend(loc=legend_loc)
     ax = hlp.__axes_styling_helper(ax, vert, rot, data_names, n_datasets,
                                    data_ax_label, name_ax_label, title)
+
+    if show_counts_on_data_ax:
+
+        def get_ticks_and_labels(n_datasets_,
+                                 max_count_each_dataset,
+                                 max_relative_bar_height):
+            ticks = []
+            tick_labels = []
+            for i in range(n_datasets_):
+                ticks.extend([1 + i, 1 + i + max_relative_bar_height])
+                tick_labels.extend([0, max_count_each_dataset[i]])
+            # END
+            ticks.append(1 + n_datasets_)
+            return ticks, tick_labels
+
+        if not vert:
+            ax2 = ax.twinx()
+            ax2.set_ylabel('Counts')
+            ticks, tick_labels = get_ticks_and_labels(n_datasets,
+                                                      max_count_each_dataset,
+                                                      MAX_RELATIVE_BAR_HEIGHT)
+            ax2.set_yticks(ticks)
+            ax2.set_yticklabels(tick_labels)
+            ax.set_ylim(1, n_datasets + 1)
+            ax2.set_ylim(1, n_datasets + 1)
+        else:
+            ax2 = ax.twiny()
+            ax2.set_xlabel('Counts')
+            ticks, tick_labels = get_ticks_and_labels(n_datasets,
+                                                      max_count_each_dataset,
+                                                      MAX_RELATIVE_BAR_HEIGHT)
+            ax2.set_xticks(ticks)
+            ax2.set_xticklabels(tick_labels, rotation=45)
+            ax.set_xlim(1, n_datasets + 1)
+            ax2.set_xlim(1, n_datasets + 1)
+
     return fig, ax
