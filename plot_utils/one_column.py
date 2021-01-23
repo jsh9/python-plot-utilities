@@ -7,10 +7,12 @@ import matplotlib as mpl
 from . import helper as hlp
 
 #%%============================================================================
-def piechart(target_array, class_names=None, dropna=False, top_n=None,
-             sort_by='counts', fig=None, ax=None, figsize=(3,3),
-             dpi=100, colors=None, display='percent', title=None,
-             fontsize=None, verbose=True, **piechart_kwargs):
+def piechart(
+        target_array, class_names=None, dropna=False, top_n=None,
+        sort_by='counts', fig=None, ax=None, figsize=(3,3),
+        dpi=100, colors=None, display='percent', title=None,
+        fontsize=None, verbose=True, **piechart_kwargs,
+):
     '''
     Plot a pie chart demonstrating proportions of different categories within
     an array.
@@ -81,12 +83,14 @@ def piechart(target_array, class_names=None, dropna=False, top_n=None,
     fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
 
     if not isinstance(target_array, hlp._array_like):
-        raise TypeError('`target_array` must be a numpy array, pandas.Series'
-                        ', or list.')
+        raise TypeError(
+            '`target_array` must be a numpy array, pandas.Series, or list.'
+        )
 
     if sort_by not in ['count', 'counts', 'name', 'names']:
-        raise ValueError("`sort_by` must be one of {'count', 'counts', "
-                         "'name', 'names'}, not '%s'." % sort_by)
+        raise ValueError(
+            f"`sort_by` must be one of {'count', 'counts', 'name', 'names'}, not '{sort_by}'."
+        )
 
     y = target_array
     if ~isinstance(y, pd.Series):
@@ -112,19 +116,23 @@ def piechart(target_array, class_names=None, dropna=False, top_n=None,
         if not isinstance(top_n, (int, np.integer)) or top_n <= 0:
             raise ValueError('`top_n` must be a positive integer.')
         if top_n > len(vals):
-            raise ValueError('`top_n` larger than the total number of '
-                             'categories (i.e., %d).' % len(vals))
+            raise ValueError(
+                '`top_n` larger than the total number of '
+                'categories (i.e., %d).' % len(vals)
+            )
 
-        occurrences = pd.Series(index=vals, data=counts).sort_values(
-                ascending=False)
+        occurrences = pd.Series(
+            index=vals, data=counts).sort_values(ascending=False)
         truncated = occurrences.iloc[:top_n]  # first top_n entries
 
         combined_category_name = 'others'
         while combined_category_name in vals:
             combined_category_name += '_'  # must not clash with current category names
 
-        other = pd.Series(index=[combined_category_name],  # just one row of data
-                          data=[occurrences.iloc[top_n:].sum()])
+        other = pd.Series(
+            index=[combined_category_name],  # just one row of data
+            data=[occurrences.iloc[top_n:].sum()],
+        )
         new_array = truncated.append(other, verify_integrity=True)
         counts = new_array.values
         vals = new_array.index
@@ -161,12 +169,16 @@ def piechart(target_array, class_names=None, dropna=False, top_n=None,
     elif display == None:
         autopct = ''
     else:
-        raise ValueError("`display` can only be one of {'percent', 'count', "
-                         "'both', None}, not '%s'." % display)
+        raise ValueError(
+            "`display` can only be one of {'percent', 'count', "
+            "'both', None}, not '%s'." % display
+        )
 
     #------------ Plot pie chart ----------------------------------------------
-    _, texts, autotexts = ax.pie(counts, labels=class_names, colors=colors,
-                                 autopct=autopct, **piechart_kwargs)
+    _, texts, autotexts = ax.pie(
+        counts, labels=class_names, colors=colors,
+        autopct=autopct, **piechart_kwargs,
+    )
     if isinstance(fontsize, (list, tuple)):
         for t_ in texts: t_.set_fontsize(fontsize[0])
         for t_ in autotexts: t_.set_fontsize(fontsize[1])
@@ -181,9 +193,11 @@ def piechart(target_array, class_names=None, dropna=False, top_n=None,
     return fig, ax
 
 #%%============================================================================
-def discrete_histogram(x, fig=None, ax=None, figsize=(5,3), dpi=100, color=None,
-                       alpha=None, rot=0, logy=False, title=None, xlabel=None,
-                       ylabel='Number of occurrences', show_xticklabel=True):
+def discrete_histogram(
+        x, fig=None, ax=None, figsize=(5,3), dpi=100, color=None,
+        alpha=None, rot=0, logy=False, title=None, xlabel=None,
+        ylabel='Number of occurrences', show_xticklabel=True,
+):
     '''
     Plot a discrete histogram based on the given data ``x``, such as below::
 
@@ -264,8 +278,9 @@ def discrete_histogram(x, fig=None, ax=None, figsize=(5,3), dpi=100, color=None,
     fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
 
     if not isinstance(x, (list, pd.Series, np.ndarray, dict)):
-        raise TypeError('`x` should be a list, pandas.Series, numpy.ndarray, '
-                        'or dict.')
+        raise TypeError(
+            '`x` should be a list, pandas.Series, numpy.ndarray, or dict.'
+        )
 
     if isinstance(x, dict):
         value_count = pd.Series(x, name='counts').sort_index()

@@ -15,11 +15,13 @@ from . import helper as hlp
 from . import colors_and_lines as cl
 
 #%%============================================================================
-def plot_timeseries(time_series, date_fmt=None, fig=None, ax=None, figsize=(10,3),
-                    dpi=100, xlabel='Time', ylabel=None, label=None, color=None,
-                    lw=2, ls=None, marker=None, fontsize=12, xgrid_on=True,
-                    ygrid_on=True, title=None, zorder=None, alpha=1.0,
-                    month_grid_width=None):
+def plot_timeseries(
+        time_series, date_fmt=None, fig=None, ax=None, figsize=(10,3),
+        dpi=100, xlabel='Time', ylabel=None, label=None, color=None,
+        lw=2, ls=None, marker=None, fontsize=12, xgrid_on=True,
+        ygrid_on=True, title=None, zorder=None, alpha=1.0,
+        month_grid_width=None,
+):
     '''
     Plot time series (i.e., values a function of dates).
 
@@ -92,11 +94,15 @@ def plot_timeseries(time_series, date_fmt=None, fig=None, ax=None, figsize=(10,3
     ts.index = _as_date(ts.index, date_fmt)  # batch-convert index to Timestamp format of pandas
 
     if zorder:
-        ax.plot(ts.index, ts, color=color, lw=lw, ls=ls, marker=marker,
-                label=label, zorder=zorder, alpha=alpha)
+        ax.plot(
+            ts.index, ts, color=color, lw=lw, ls=ls, marker=marker,
+            label=label, zorder=zorder, alpha=alpha,
+        )
     else:
-        ax.plot(ts.index, ts, color=color, lw=lw, ls=ls, marker=marker,
-                label=label, alpha=alpha)
+        ax.plot(
+            ts.index, ts, color=color, lw=lw, ls=ls, marker=marker,
+            label=label, alpha=alpha,
+        )
     ax.set_label(label)  # set label for legends using argument 'label'
     if xlabel: ax.set_xlabel(xlabel)
     if ylabel: ax.set_ylabel(ylabel)
@@ -120,9 +126,11 @@ def plot_timeseries(time_series, date_fmt=None, fig=None, ax=None, figsize=(10,3
     return fig, ax
 
 #%%============================================================================
-def plot_multiple_timeseries(multiple_time_series, show_legend=True,
-                             fig=None, ax=None, figsize=(10,3), dpi=100,
-                             ncol_legend=5, **kwargs):
+def plot_multiple_timeseries(
+        multiple_time_series, show_legend=True,
+        fig=None, ax=None, figsize=(10,3), dpi=100,
+        ncol_legend=5, **kwargs,
+):
     '''
     Plot multiple time series.
 
@@ -168,8 +176,9 @@ def plot_multiple_timeseries(multiple_time_series, show_legend=True,
         Plot a single set of time series.
     '''
     if not isinstance(multiple_time_series, (pd.Series, pd.DataFrame)):
-        raise TypeError('`multiple_time_series` must be a pandas Series or '
-                        'DataFrame.')
+        raise TypeError(
+            '`multiple_time_series` must be a pandas Series or DataFrame.'
+        )
 
     fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
 
@@ -187,8 +196,9 @@ def plot_multiple_timeseries(multiple_time_series, show_legend=True,
         elif nr_timeseries <= 120:  # need multiple line widths
             linespecs = cl.get_linespecs(range_linewidth=[1,3,5])
         elif nr_timeseries <= 240:
-            linespecs = cl.get_linespecs(color_scheme='tab20',
-                                         range_linewidth=[1,3,5])
+            linespecs = cl.get_linespecs(
+                color_scheme='tab20', range_linewidth=[1,3,5],
+            )
         else:
             linespecs = cl.get_linespecs(
                 color_scheme='tab20',  # use more line widths
@@ -214,18 +224,21 @@ def plot_multiple_timeseries(multiple_time_series, show_legend=True,
             bbox_anchor_loc = (0., 1.02, 1., .102)
         else:
             bbox_anchor_loc = (0., 1.08, 1., .102)
-        ax.legend(bbox_to_anchor=bbox_anchor_loc, loc='lower center',
-                  ncol=ncol_legend)
+        ax.legend(
+            bbox_to_anchor=bbox_anchor_loc, loc='lower center', ncol=ncol_legend,
+        )
 
     ax.set_axisbelow(True)
     return fig, ax
 
 #%%============================================================================
-def fill_timeseries(time_series, upper_bound, lower_bound, date_fmt=None,
-                    fig=None, ax=None, figsize=(10,3), dpi=100,
-                    xlabel='Time', ylabel=None, label=None,
-                    color=None, lw=3, ls='-', fontsize=12, title=None,
-                    xgrid_on=True, ygrid_on=True):
+def fill_timeseries(
+        time_series, upper_bound, lower_bound, date_fmt=None,
+        fig=None, ax=None, figsize=(10,3), dpi=100,
+        xlabel='Time', ylabel=None, label=None,
+        color=None, lw=3, ls='-', fontsize=12, title=None,
+        xgrid_on=True, ygrid_on=True,
+):
     '''
     Plot time series as a line and then plot the upper and lower bounds as
     shaded areas.
@@ -281,8 +294,9 @@ def fill_timeseries(time_series, upper_bound, lower_bound, date_fmt=None,
         The axes object being created or being passed into this function.
     '''
     if not isinstance(time_series, pd.Series):
-        raise TypeError('`time_series` must be a pandas Series with index '
-                        'being dates.')
+        raise TypeError(
+            '`time_series` must be a pandas Series with index being dates.'
+        )
 
     fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
 
@@ -291,8 +305,10 @@ def fill_timeseries(time_series, upper_bound, lower_bound, date_fmt=None,
     lb = lower_bound.copy()
     ub = upper_bound.copy()
 
-    ax.fill_between(ts.index, lb, ub, color=color, facecolor=color,
-                    linewidth=0.01, alpha=0.5, interpolate=True)
+    ax.fill_between(
+        ts.index, lb, ub, color=color, facecolor=color,
+        linewidth=0.01, alpha=0.5, interpolate=True,
+    )
     ax.plot(ts.index, ts, color=color, lw=lw, ls=ls, label=label)
     ax.set_label(label)  # set label for legends using argument 'label'
     if xlabel: ax.set_xlabel(xlabel)

@@ -9,9 +9,11 @@ from matplotlib.collections import PatchCollection
 from . import helper as hlp
 
 #%%============================================================================
-def plot_ranking(ranking, fig=None, ax=None, figsize='auto', dpi=100,
-                 barh=True, top_n=None, score_ax_label=None, name_ax_label=None,
-                 invert_name_ax=False, grid_on=True):
+def plot_ranking(
+        ranking, fig=None, ax=None, figsize='auto', dpi=100,
+        barh=True, top_n=None, score_ax_label=None, name_ax_label=None,
+        invert_name_ax=False, grid_on=True,
+):
     '''
     Plot rankings as a bar plot (in descending order), such as::
 
@@ -94,14 +96,17 @@ def plot_ranking(ranking, fig=None, ax=None, figsize='auto', dpi=100,
     if barh:
         kind = 'barh'
         xlabel, ylabel = score_ax_label, name_ax_label
-        ax = ranking.sort_values(ascending=(top_n >= 0)).iloc[-np.abs(top_n):]\
-                    .plot(kind=kind, ax=ax)
+        ax = ranking.sort_values(
+            ascending=(top_n >= 0)
+        ).iloc[-np.abs(top_n):].plot(kind=kind, ax=ax)
     else:
         kind = 'bar'
         xlabel, ylabel = name_ax_label, score_ax_label
-        ax = ranking.sort_values(ascending=(top_n < 0))\
-                    .iloc[:np.abs(top_n) if top_n != 0 else None]\
-                    .plot(kind=kind, ax=ax)
+        ax = ranking.sort_values(
+            ascending=(top_n < 0)
+        ).iloc[:np.abs(top_n) if top_n != 0 else None].plot(
+            kind=kind, ax=ax,
+        )
 
     if invert_name_ax:
         if barh is True:
@@ -117,12 +122,14 @@ def plot_ranking(ranking, fig=None, ax=None, figsize='auto', dpi=100,
     return fig, ax
 
 #%%============================================================================
-def plot_with_error_bounds(x, y, upper_bound, lower_bound,
-                           fig=None, ax=None, figsize=None, dpi=100,
-                           line_color=[0.4]*3, shade_color=[0.7]*3,
-                           shade_alpha=0.5, linewidth=2.0, legend_loc='best',
-                           line_label='Data', shade_label='$\mathregular{\pm}$STD',
-                           logx=False, logy=False, grid_on=True):
+def plot_with_error_bounds(
+        x, y, upper_bound, lower_bound,
+        fig=None, ax=None, figsize=None, dpi=100,
+        line_color=[0.4]*3, shade_color=[0.7]*3,
+        shade_alpha=0.5, linewidth=2.0, legend_loc='best',
+        line_label='Data', shade_label='$\mathregular{\pm}$STD',
+        logx=False, logy=False, grid_on=True,
+):
     '''
     Plot a graph with one line and its upper and lower bounds, with areas between
     bounds shaded. The effect is similar to this illustration below::
@@ -196,10 +203,12 @@ def plot_with_error_bounds(x, y, upper_bound, lower_bound,
 
     fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
 
-    hl1 = ax.fill_between(x, lower_bound, upper_bound,
-                           color=shade_color, facecolor=shade_color,
-                           linewidth=0.01, alpha=shade_alpha, interpolate=True,
-                           label=shade_label)
+    hl1 = ax.fill_between(
+        x, lower_bound, upper_bound,
+        color=shade_color, facecolor=shade_color,
+        linewidth=0.01, alpha=shade_alpha, interpolate=True,
+        label=shade_label,
+    )
     hl2, = ax.plot(x, y, color=line_color, linewidth=linewidth, label=line_label)
     if logx: ax.set_xscale('log')
     if logy: ax.set_yscale('log')
@@ -213,11 +222,13 @@ def plot_with_error_bounds(x, y, upper_bound, lower_bound,
     return fig, ax
 
 #%%============================================================================
-def visualize_cv_scores(fig=None, ax=None, dpi=100, n_folds=5,
-                        cv_scores=None, box_height=0.6, box_width=0.9,
-                        gap_frac=0.05, metric_name='AUC', avg_cv_score=None,
-                        no_holdout_set=False, holdout_score=None, fontsize=9,
-                        flip_yaxis=True):
+def visualize_cv_scores(
+        fig=None, ax=None, dpi=100, n_folds=5,
+        cv_scores=None, box_height=0.6, box_width=0.9,
+        gap_frac=0.05, metric_name='AUC', avg_cv_score=None,
+        no_holdout_set=False, holdout_score=None, fontsize=9,
+        flip_yaxis=True,
+):
     '''
     Visualize K-fold cross-validation scores as well as hold-out set performance
     in an intuitive way.
@@ -313,30 +324,36 @@ def visualize_cv_scores(fig=None, ax=None, dpi=100, n_folds=5,
                 # END IF-ELS
             # END FOR
         # END IF-ELSE
-        ax = _plot_one_row_of_rectangles(ax, n_boxes=n_folds,
-                                         southwest_corner=(0, j * box_height),
-                                         box_height=box_height, fontsize=fontsize,
-                                         box_width=box_width, gap_frac=gap_frac,
-                                         show_which_box_as_test=j, text=text_)
+        ax = _plot_one_row_of_rectangles(
+            ax, n_boxes=n_folds,
+            southwest_corner=(0, j * box_height),
+            box_height=box_height, fontsize=fontsize,
+            box_width=box_width, gap_frac=gap_frac,
+            show_which_box_as_test=j, text=text_,
+        )
     # END FOR
 
     text_list = ['Fold %d' % (_ + 1) for _ in range(n_folds)]
-    ax = _plot_one_row_of_rectangles(ax, n_boxes=n_folds,
-                                     southwest_corner=(0, n_folds * box_height),
-                                     box_height=box_height, box_width=box_width,
-                                     gap_frac=gap_frac, fontsize=fontsize,
-                                     show_which_box_as_test=-1,
-                                     train_set_color='gray', alpha=GRAY_COLOR_ALPHA,
-                                     text=text_list)
+    ax = _plot_one_row_of_rectangles(
+        ax, n_boxes=n_folds,
+        southwest_corner=(0, n_folds * box_height),
+        box_height=box_height, box_width=box_width,
+        gap_frac=gap_frac, fontsize=fontsize,
+        show_which_box_as_test=-1,
+        train_set_color='gray', alpha=GRAY_COLOR_ALPHA,
+        text=text_list,
+    )
 
-    ax = _plot_one_row_of_rectangles(ax, n_boxes=1,
-                                     southwest_corner=(0, -1.5 * box_height),
-                                     box_height=box_height,
-                                     box_width=total_width,
-                                     gap_frac=0.0, text=['Training data'],
-                                     fontsize=fontsize,
-                                     train_set_color='#6baed6',
-                                     alpha=OTHER_COLOR_ALPHA)
+    ax = _plot_one_row_of_rectangles(
+        ax, n_boxes=1,
+        southwest_corner=(0, -1.5 * box_height),
+        box_height=box_height,
+        box_width=total_width,
+        gap_frac=0.0, text=['Training data'],
+        fontsize=fontsize,
+        train_set_color='#6baed6',
+        alpha=OTHER_COLOR_ALPHA,
+    )
 
     if not no_holdout_set:
         if holdout_score is not None:
@@ -347,23 +364,26 @@ def visualize_cv_scores(fig=None, ax=None, dpi=100, n_folds=5,
         holdout_box_gap_frac = 0.01
         r1 = 1 + holdout_box_gap_frac
         holdout_box_width = total_width * 0.5
-        ax = _plot_one_row_of_rectangles(ax, n_boxes=1,
-                                         southwest_corner=(total_width * r1,
-                                                           -1.5 * box_height),
-                                         box_width=holdout_box_width,
-                                         box_height=box_height,
-                                         gap_frac=0.0, text=[holdout_txt],
-                                         fontsize=fontsize,
-                                         train_set_color='yellow',
-                                         alpha=OTHER_COLOR_ALPHA)
-        ax = _plot_one_row_of_rectangles(ax, n_boxes=1,
-                                         southwest_corner=(0, -2.7 * box_height),
-                                         box_height=box_height,
-                                         box_width=total_width * r1 + holdout_box_width,
-                                         gap_frac=0.0, text=['All data'],
-                                         fontsize=fontsize,
-                                         train_set_color='gray',
-                                         alpha=GRAY_COLOR_ALPHA)
+        ax = _plot_one_row_of_rectangles(
+            ax, n_boxes=1,
+            southwest_corner=(total_width * r1, -1.5 * box_height),
+            box_width=holdout_box_width,
+            box_height=box_height,
+            gap_frac=0.0, text=[holdout_txt],
+            fontsize=fontsize,
+            train_set_color='yellow',
+            alpha=OTHER_COLOR_ALPHA,
+        )
+        ax = _plot_one_row_of_rectangles(
+            ax, n_boxes=1,
+            southwest_corner=(0, -2.7 * box_height),
+            box_height=box_height,
+            box_width=total_width * r1 + holdout_box_width,
+            gap_frac=0.0, text=['All data'],
+            fontsize=fontsize,
+            train_set_color='gray',
+            alpha=GRAY_COLOR_ALPHA,
+        )
     # END IF
 
     if avg_cv_score is not None or cv_scores is not None:
@@ -374,8 +394,9 @@ def visualize_cv_scores(fig=None, ax=None, dpi=100, n_folds=5,
         avg_score_txt = 'Take average'
         # END IF-ELSE
     # END IF-ELSE
-    _plot_bracket(ax, n_folds, total_width, total_height, avg_score_txt,
-                  fontsize=fontsize)
+    _plot_bracket(
+        ax, n_folds, total_width, total_height, avg_score_txt, fontsize=fontsize,
+    )
 
     if flip_yaxis:
         ax.invert_yaxis()
@@ -387,11 +408,13 @@ def visualize_cv_scores(fig=None, ax=None, dpi=100, n_folds=5,
     return fig, ax
 
 #------------------------------------------------------------------------------
-def _plot_one_row_of_rectangles(ax, n_boxes=5, southwest_corner=(0, 0),
-                                box_height=0.6, box_width=0.9, gap_frac=0.05,
-                                show_which_box_as_test=-1,
-                                train_set_color='green', test_set_color='orange',
-                                alpha=0.3, text=None, fontsize=None):
+def _plot_one_row_of_rectangles(
+        ax, n_boxes=5, southwest_corner=(0, 0),
+        box_height=0.6, box_width=0.9, gap_frac=0.05,
+        show_which_box_as_test=-1,
+        train_set_color='green', test_set_color='orange',
+        alpha=0.3, text=None, fontsize=None,
+):
     '''
     Plot one row of rectangles (small boxes).
 
@@ -432,9 +455,9 @@ def _plot_one_row_of_rectangles(ax, n_boxes=5, southwest_corner=(0, 0),
     patches_test = []
     for i in range(n_boxes):
         x0, y0 = southwest_corner
-        x1, y1, width, height = __add_gap_to_coord(x0 + i * box_width, y0,
-                                                   box_width, box_height,
-                                                   gap_frac=gap_frac)
+        x1, y1, width, height = __add_gap_to_coord(
+            x0 + i * box_width, y0, box_width, box_height, gap_frac=gap_frac,
+        )
         rect = Rectangle((x1, y1), width, height)
         if i == show_which_box_as_test:
             patches_test.append(rect)
@@ -442,15 +465,21 @@ def _plot_one_row_of_rectangles(ax, n_boxes=5, southwest_corner=(0, 0),
             patches_train.append(rect)
     # END IF
     box_edge_width = 0.7
-    pc_train = PatchCollection(patches_train, edgecolor='k', lw=box_edge_width,
-                               facecolor=train_set_color, alpha=alpha)
-    pc_test = PatchCollection(patches_test, edgecolor='k', lw=box_edge_width,
-                              facecolor=test_set_color, alpha=alpha)
+    pc_train = PatchCollection(
+        patches_train, edgecolor='k', lw=box_edge_width,
+        facecolor=train_set_color, alpha=alpha,
+    )
+    pc_test = PatchCollection(
+        patches_test, edgecolor='k', lw=box_edge_width,
+        facecolor=test_set_color, alpha=alpha,
+    )
     ax.add_collection(pc_train)
     ax.add_collection(pc_test)
     if text is not None:
-        __add_text(ax, text, n_boxes=n_boxes, southwest_corner=southwest_corner,
-                   box_height=box_height, box_width=box_width, fontsize=fontsize)
+        __add_text(
+            ax, text, n_boxes=n_boxes, southwest_corner=southwest_corner,
+            box_height=box_height, box_width=box_width, fontsize=fontsize,
+        )
     # END IF
     return ax
 
@@ -463,12 +492,15 @@ def __add_gap_to_coord(x0, y0, width, height, gap_frac=0.05):
     return x1, y1, new_width, new_height
 
 #------------------------------------------------------------------------------
-def __add_text(ax, text, n_boxes=5, southwest_corner=(0, 0),
-               box_height=0.6, box_width=0.9, fontsize=10):
+def __add_text(
+        ax, text, n_boxes=5, southwest_corner=(0, 0),
+        box_height=0.6, box_width=0.9, fontsize=10,
+    ):
     assert(len(text) == n_boxes)
-    x_mid, y_mid = ___get_mid_points(n_boxes=n_boxes,
-                                     southwest_corner=southwest_corner,
-                                     box_height=box_height, box_width=box_width)
+    x_mid, y_mid = ___get_mid_points(
+        n_boxes=n_boxes, southwest_corner=southwest_corner,
+        box_height=box_height, box_width=box_width,
+    )
     for i in range(n_boxes):
         ax.text(x_mid[i], y_mid[i], text[i], ha='center', va='center', fontsize=fontsize)
     # END FOR
@@ -486,8 +518,10 @@ def ___get_mid_points(n_boxes=5, southwest_corner=(0, 0), box_height=0.6, box_wi
     return x_mid, y_mid
 
 #------------------------------------------------------------------------------
-def _plot_bracket(ax, n_boxes, total_width, total_height, text, gap_frac=0.02,
-                  c='gray', lw=1.0, fontsize=10):
+def _plot_bracket(
+        ax, n_boxes, total_width, total_height, text, gap_frac=0.02,
+        c='gray', lw=1.0, fontsize=10,
+):
     bar_len = total_width * gap_frac * 2
 
     x1 = total_width * (1 + gap_frac)
@@ -509,4 +543,6 @@ def _plot_bracket(ax, n_boxes, total_width, total_height, text, gap_frac=0.02,
     ax.plot([x2, x2_], [y2, y2_], c=c, lw=lw)
     ax.plot([x1_, x1_], [y1_, y2_], c=c, lw=lw)
     ax.plot([x0, x0_], [y0, y0], c=c, lw=lw)
-    ax.text(x0__, y0, text, ha='left', va='center', fontsize=fontsize, rotation=270)
+    ax.text(
+        x0__, y0, text, ha='left', va='center', fontsize=fontsize, rotation=270,
+    )

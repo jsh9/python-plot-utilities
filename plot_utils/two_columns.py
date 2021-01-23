@@ -11,10 +11,12 @@ from . import multiple_columns as mc
 from . import colors_and_lines as cl
 
 #%%============================================================================
-def category_means(categorical_array, continuous_array, fig=None, ax=None,
-                   figsize=None, dpi=100, title=None, xlabel=None, ylabel=None,
-                   rot=0, dropna=False, show_stats=True, sort_by='name',
-                   vert=True, plot_violins=True, **extra_kwargs):
+def category_means(
+        categorical_array, continuous_array, fig=None, ax=None,
+        figsize=None, dpi=100, title=None, xlabel=None, ylabel=None,
+        rot=0, dropna=False, show_stats=True, sort_by='name',
+        vert=True, plot_violins=True, **extra_kwargs,
+):
     '''
     Summarize the mean values of entries of ``continuous_array`` corresponding
     to each distinct category in ``categorical_array``, and show a violin plot
@@ -97,14 +99,17 @@ def category_means(categorical_array, continuous_array, fig=None, ax=None,
     y = continuous_array
 
     if not isinstance(x, hlp._array_like):
-        raise TypeError('`categorical_array` must be pandas.Series, '
-                        'numpy.ndarray, or list.')
+        raise TypeError(
+            '`categorical_array` must be pandas.Series, numpy.ndarray, or list.'
+        )
     if not isinstance(y, hlp._array_like):
-        raise TypeError('`continuous_array` must be pandas.Series, '
-                        'numpy.ndarray, or list.')
+        raise TypeError(
+            '`continuous_array` must be pandas.Series, numpy.ndarray, or list.'
+        )
     if len(x) != len(y):
-        raise hlp.LengthError('Lengths of `categorical_array` and `continuous_array` '
-                              'must be the same.')
+        raise hlp.LengthError(
+            'Lengths of `categorical_array` and `continuous_array` must be the same.'
+        )
     if isinstance(x, np.ndarray) and x.ndim > 1:
         raise hlp.DimensionError('`categorical_array` must be a 1D numpy array.')
     if isinstance(y, np.ndarray) and y.ndim > 1:
@@ -157,20 +162,26 @@ def category_means(categorical_array, continuous_array, fig=None, ax=None,
     data_names = [str(_) for _ in x_classes_copy]
 
     if plot_violins:
-        fig, ax = mc.violin_plot(y_values, fig=fig, ax=ax, figsize=figsize,
-                                 dpi=dpi, data_names=data_names,
-                                 sort_by=sort_by, vert=vert, **extra_kwargs)
+        fig, ax = mc.violin_plot(
+            y_values, fig=fig, ax=ax, figsize=figsize,
+            dpi=dpi, data_names=data_names,
+            sort_by=sort_by, vert=vert, **extra_kwargs,
+        )
     else:
-        fig, ax = mc.hist_multi(y_values, bins='auto',
-                                fig=fig, ax=ax, figsize=figsize, dpi=dpi,
-                                data_names=data_names, sort_by=sort_by, vert=vert,
-                                show_legend=False, **extra_kwargs)
+        fig, ax = mc.hist_multi(
+            y_values, bins='auto',
+            fig=fig, ax=ax, figsize=figsize, dpi=dpi,
+            data_names=data_names, sort_by=sort_by, vert=vert,
+            show_legend=False, **extra_kwargs,
+        )
 
     if show_stats:
         ha = 'left' if vert else 'right'
         xy = (0.05, 0.92) if vert else (0.95, 0.92)
-        ax.annotate('F=%.2f, p_val=%.2g' % (F_stat, p_value), ha=ha,
-                    xy=xy, xycoords='axes fraction')
+        ax.annotate(
+            'F=%.2f, p_val=%.2g' % (F_stat, p_value), ha=ha,
+            xy=xy, xycoords='axes fraction',
+        )
 
     if title: ax.set_title(title)
     if xlabel: ax.set_xlabel(xlabel)
@@ -179,9 +190,11 @@ def category_means(categorical_array, continuous_array, fig=None, ax=None,
     return fig, ax, mean_values, (F_stat, p_value)
 
 #%%============================================================================
-def positive_rate(categorical_array, two_classes_array, fig=None, ax=None,
-                  figsize=None, dpi=100, barh=True, top_n=None, dropna=False,
-                  xlabel=None, ylabel=None, show_stats=True):
+def positive_rate(
+        categorical_array, two_classes_array, fig=None, ax=None,
+        figsize=None, dpi=100, barh=True, top_n=None, dropna=False,
+        xlabel=None, ylabel=None, show_stats=True,
+):
     '''
     Calculate the proportions of the different categories in
     ``categorical_array`` that fall into class "1" (or ``True``) in
@@ -247,14 +260,17 @@ def positive_rate(categorical_array, two_classes_array, fig=None, ax=None,
     y = two_classes_array
 
     if not isinstance(categorical_array, hlp._array_like):
-        raise TypeError('`categorical_array` must be pandas.Series, '
-                        'numpy.ndarray, or list.')
+        raise TypeError(
+            '`categorical_array` must be pandas.Series, numpy.ndarray, or list.'
+        )
     if not isinstance(two_classes_array, hlp._array_like):
-        raise TypeError('`two_classes_array` must be pandas.Series, '
-                        'numpy.array, or list.')
+        raise TypeError(
+            '`two_classes_array` must be pandas.Series, numpy.array, or list.'
+        )
     if len(x) != len(y):
-        raise hlp.LengthError('Lengths of `categorical_array` and '
-                              '`two_classes_array` must be the same.')
+        raise hlp.LengthError(
+            'Lengths of `categorical_array` and `two_classes_array` must be the same.'
+        )
     if isinstance(x, np.ndarray) and x.ndim > 1:
         raise hlp.DimensionError('`categorical_array` must be a 1D numpy array.')
     if isinstance(y, np.ndarray) and y.ndim > 1:
@@ -301,12 +317,16 @@ def positive_rate(categorical_array, two_classes_array, fig=None, ax=None,
         ylabel = 'Positive rate%sof "%s"' % (char, y.name)
 
     fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
-    fig, ax = misc.plot_ranking(pos_rate, fig=fig, ax=ax, top_n=top_n, barh=barh,
-                                score_ax_label=ylabel, name_ax_label=xlabel)
+    fig, ax = misc.plot_ranking(
+        pos_rate, fig=fig, ax=ax, top_n=top_n, barh=barh,
+        score_ax_label=ylabel, name_ax_label=xlabel,
+    )
 
     if show_stats:
-        ax.annotate('chi^2=%.2f, p_val=%.2g' % (chi2, p_val), ha='right',
-                    xy=(0.99, 1.05), xycoords='axes fraction', va='bottom')
+        ax.annotate(
+            'chi^2=%.2f, p_val=%.2g' % (chi2, p_val), ha='right',
+            xy=(0.99, 1.05), xycoords='axes fraction', va='bottom',
+        )
 
     return fig, ax, pos_rate, (chi2, p_val, dof)
 
@@ -349,10 +369,12 @@ def _crosstab_to_arrays(cross_tab):
     return list(x), list(y)  # convert tuple into list
 
 #%%============================================================================
-def contingency_table(array_horizontal, array_vertical, fig=None, ax=None,
-                      figsize='auto', dpi=100, color_map='auto', xlabel=None,
-                      ylabel=None, dropna=False, rot=45, normalize=True,
-                      symm_cbar=True, show_stats=True):
+def contingency_table(
+        array_horizontal, array_vertical, fig=None, ax=None,
+        figsize='auto', dpi=100, color_map='auto', xlabel=None,
+        ylabel=None, dropna=False, rot=45, normalize=True,
+        symm_cbar=True, show_stats=True,
+):
     '''
     Calculate and visualize the contingency table from two categorical arrays.
     Also perform a Pearson's chi-squared test to evaluate whether the two
@@ -425,14 +447,20 @@ def contingency_table(array_horizontal, array_vertical, fig=None, ax=None,
     y = array_vertical
 
     if not isinstance(x, hlp._array_like):
-        raise TypeError('The input `array_horizontal` must be pandas.Series, '
-                        'numpy.ndarray, or list.')
+        raise TypeError(
+            'The input `array_horizontal` must be pandas.Series, '
+            'numpy.ndarray, or list.'
+        )
     if not isinstance(y, hlp._array_like):
-        raise TypeError('The input `array_vertical` must be pandas.Series, '
-                        'numpy.array, or list.')
+        raise TypeError(
+            'The input `array_vertical` must be pandas.Series, '
+            'numpy.array, or list.'
+        )
     if len(x) != len(y):
-        raise hlp.LengthError('Lengths of `array_horizontal` and `array_vertical` '
-                              'must be the same.')
+        raise hlp.LengthError(
+            'Lengths of `array_horizontal` and `array_vertical` '
+            'must be the same.'
+        )
     if isinstance(x, np.ndarray) and len(x.shape) > 1:
         raise hlp.DimensionError('`array_horizontal` must be a 1D numpy array.')
     if isinstance(y, np.ndarray) and len(y.shape) > 1:
@@ -453,7 +481,9 @@ def contingency_table(array_horizontal, array_vertical, fig=None, ax=None,
 
     observed = pd.crosstab(np.array(y), x)  # use at least one numpy array to avoid possible index matching errors
     chi2, p_val, dof, expected = stats.chi2_contingency(observed)
-    expected = pd.DataFrame(expected, index=observed.index, columns=observed.columns)
+    expected = pd.DataFrame(
+        expected, index=observed.index, columns=observed.columns,
+    )
     relative_diff = (observed - expected) / expected
 
     if figsize == 'auto':
@@ -506,8 +536,10 @@ def contingency_table(array_horizontal, array_vertical, fig=None, ax=None,
         text_color = lambda x: 'k' if x > up_3 else ('y' if x > lo_3 else 'w')
 
     for i, j in itertools.product(range(table.shape[0]), range(table.shape[1])):
-        ax.text(j, i, format(table.iloc[i, j], fmt), ha="center", va='center',
-                fontsize=9, color=text_color(table.iloc[i, j]))
+        ax.text(
+            j, i, format(table.iloc[i, j], fmt), ha="center", va='center',
+            fontsize=9, color=text_color(table.iloc[i, j]),
+        )
 
     if xlabel:
         ax.xaxis.set_label_position('top')
@@ -526,17 +558,21 @@ def contingency_table(array_horizontal, array_vertical, fig=None, ax=None,
     correlation_metrics = (phi, cc, V)
 
     if show_stats:
-        ax.annotate('$\chi^2$=%.2f, p_val=%.2g\n'
-                    '$\phi$=%.2g, CoC=%.2g, V=%.2g' % (chi2, p_val, phi, cc, V),
-                    ha='center', xy=(0.5, -0.09), xycoords='axes fraction',
-                    va='top')
+        ax.annotate(
+            '$\chi^2$=%.2f, p_val=%.2g\n'
+            '$\phi$=%.2g, CoC=%.2g, V=%.2g' % (chi2, p_val, phi, cc, V),
+            ha='center', xy=(0.5, -0.09), xycoords='axes fraction',
+            va='top',
+        )
 
     return fig, ax, tables, chi2_results, correlation_metrics
 
 #%%============================================================================
-def scatter_plot_two_cols(X, two_columns, fig=None, ax=None,
-                          figsize=(3,3), dpi=100, alpha=0.5, color=None,
-                          grid_on=True, logx=False, logy=False):
+def scatter_plot_two_cols(
+        X, two_columns, fig=None, ax=None,
+        figsize=(3,3), dpi=100, alpha=0.5, color=None,
+        grid_on=True, logx=False, logy=False,
+):
     '''
     Produce scatter plots of two of the columns in ``X`` (the data matrix).
     The correlation between the two columns are shown on top of the plot.
@@ -631,13 +667,15 @@ def scatter_plot_two_cols(X, two_columns, fig=None, ax=None,
     return fig, ax
 
 #%%============================================================================
-def bin_and_mean(xdata, ydata, bins=10, distribution='normal', show_fig=True,
-                 fig=None, ax=None, figsize=None, dpi=100, show_bins=True,
-                 raw_data_label='raw data', mean_data_label='average',
-                 xlabel=None, ylabel=None, logx=False, logy=False, grid_on=True,
-                 error_bounds=True, err_bound_type='shade', legend_on=True,
-                 subsamp_thres=None, show_stats=True, show_SE=False,
-                 err_bound_shade_opacity=0.5):
+def bin_and_mean(
+        xdata, ydata, bins=10, distribution='normal', show_fig=True,
+        fig=None, ax=None, figsize=None, dpi=100, show_bins=True,
+        raw_data_label='raw data', mean_data_label='average',
+        xlabel=None, ylabel=None, logx=False, logy=False, grid_on=True,
+        error_bounds=True, err_bound_type='shade', legend_on=True,
+        subsamp_thres=None, show_stats=True, show_SE=False,
+        err_bound_shade_opacity=0.5,
+):
     '''
     Calculate the "bin-and-mean" results and optionally show the "bin-and-mean"
     plot.
@@ -779,8 +817,9 @@ def bin_and_mean(xdata, ydata, bins=10, distribution='normal', show_fig=True,
         (``x_mean`` and ``y_mean``).
     '''
     if not isinstance(xdata, hlp._array_like) or not isinstance(ydata, hlp._array_like):
-        raise TypeError('`xdata` and `ydata` must be lists, numpy arrays, '
-                        'or pandas Series.')
+        raise TypeError(
+            '`xdata` and `ydata` must be lists, numpy arrays, or pandas Series.'
+        )
 
     if len(xdata) != len(ydata):
         raise hlp.LengthError('`xdata` and `ydata` must have the same length.')
@@ -797,9 +836,11 @@ def bin_and_mean(xdata, ydata, bins=10, distribution='normal', show_fig=True,
             x_uni = np.unique(xdata)
             bins = [np.nanpercentile(x_uni,(j+0.)/bins*100) for j in range(nr)]
             if not all(x <= y for x,y in zip(bins,bins[1:])):  # https://stackoverflow.com/a/4983359/8892243
-                print('\nWARNING: Resulting "bins" array is not monotonically '
-                      'increasing. Please use a smaller "bins" to avoid potential '
-                      'issues.\n')
+                print(
+                    '\nWARNING: Resulting "bins" array is not monotonically '
+                    'increasing. Please use a smaller "bins" to avoid potential '
+                    'issues.\n'
+                )
     elif isinstance(bins,(list,np.ndarray)):  # if user specifies array
         nr = len(bins)
     else:
@@ -840,12 +881,16 @@ def bin_and_mean(xdata, ydata, bins=10, distribution='normal', show_fig=True,
                 estimated_mu = np.log(scale)
                 estimated_sigma = s
                 y_mean[j] = np.exp(estimated_mu + estimated_sigma**2.0/2.0)
-                y_std[j]  = np.sqrt(np.exp(2.*estimated_mu + estimated_sigma**2.) \
-                             * (np.exp(estimated_sigma**2.) - 1) )
+                y_std[j]  = np.sqrt(
+                    np.exp(2.*estimated_mu + estimated_sigma**2.) \
+                    * (np.exp(estimated_sigma**2.) - 1)
+                )
                 y_SE[j] = y_std[j] / np.sqrt(len(y_in_bin))
             else:
-                raise ValueError("Valid values of `distribution` are "
-                                 "{'normal', 'lognormal'}. Not '%s'." % distribution)
+                raise ValueError(
+                    "Valid values of `distribution` are "
+                    "{'normal', 'lognormal'}. Not '%s'." % distribution
+                )
 
         #------------Pick subsets of data, for faster plotting-----------------
         #------------Note that this does not affect mean and std---------------
@@ -878,33 +923,49 @@ def bin_and_mean(xdata, ydata, bins=10, distribution='normal', show_fig=True,
         ax.scatter(xdata,ydata,c='gray',alpha=0.3,label=raw_data_label,zorder=1)
         if error_bounds:
             if err_bound_type == 'shade':
-                ax.plot(x_mean,y_mean,'-o',c='orange',lw=2,label=mean_data_label,zorder=3)
+                ax.plot(
+                    x_mean, y_mean, '-o', c='orange', lw=2,
+                    label=mean_data_label, zorder=3,
+                )
                 if show_SE:
-                    ax.fill_between(x_mean, y_mean + y_SE, y_mean - y_SE,
-                                    label='$\pm$ S.E.', facecolor='orange',
-                                    alpha=err_bound_shade_opacity, zorder=2.5)
+                    ax.fill_between(
+                        x_mean, y_mean + y_SE, y_mean - y_SE,
+                        label='$\pm$ S.E.', facecolor='orange',
+                        alpha=err_bound_shade_opacity, zorder=2.5,
+                    )
                 else:
-                    ax.fill_between(x_mean, y_mean + y_std, y_mean - y_std,
-                                    label='$\pm$ std', facecolor='orange',
-                                    alpha=err_bound_shade_opacity, zorder=2.5)
+                    ax.fill_between(
+                        x_mean, y_mean + y_std, y_mean - y_std,
+                        label='$\pm$ std', facecolor='orange',
+                        alpha=err_bound_shade_opacity, zorder=2.5,
+                    )
                 # END IF-ELSE
             elif err_bound_type == 'bar':
                 if show_SE:
                     mean_data_label += '$\pm$ S.E.'
-                    ax.errorbar(x_mean,y_mean,yerr=y_SE,ls='-',marker='o',c='orange',
-                                lw=2,elinewidth=1,capsize=2,label=mean_data_label,
-                                zorder=3)
+                    ax.errorbar(
+                        x_mean, y_mean, yerr=y_SE, ls='-', marker='o',
+                        c='orange', lw=2, elinewidth=1, capsize=2,
+                        label=mean_data_label, zorder=3,
+                    )
                 else:
                     mean_data_label += '$\pm$ std'
-                    ax.errorbar(x_mean,y_mean,yerr=y_std,ls='-',marker='o',c='orange',
-                                lw=2,elinewidth=1,capsize=2,label=mean_data_label,
-                                zorder=3)
+                    ax.errorbar(
+                        x_mean, y_mean, yerr=y_std, ls='-', marker='o',
+                        c='orange', lw=2, elinewidth=1, capsize=2,
+                        label=mean_data_label, zorder=3,
+                    )
                 # END IF-ELSE
             else:
-                raise ValueError('Valid "err_bound_type" name are {"bound", '
-                                 '"bar"}, not "%s".' % err_bound_type)
+                raise ValueError(
+                    'Valid "err_bound_type" name are {"bound", '
+                    '"bar"}, not "%s".' % err_bound_type
+                )
         else:
-            ax.plot(x_mean,y_mean,'-o',c='orange',lw=2,label=mean_data_label,zorder=3)
+            ax.plot(
+                x_mean, y_mean, '-o', c='orange', lw=2, label=mean_data_label,
+                zorder=3,
+            )
 
         ax.set_axisbelow(True)
         if xlabel: ax.set_xlabel(xlabel)
@@ -933,4 +994,3 @@ def bin_and_mean(xdata, ydata, bins=10, distribution='normal', show_fig=True,
         return fig, ax, x_mean, y_mean, y_std, y_SE, stats_
     else:
         return None, None, x_mean, y_mean, y_std, y_SE, stats_
-

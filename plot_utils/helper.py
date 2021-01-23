@@ -116,7 +116,6 @@ def _process_fig_ax_objects(fig, ax, figsize=None, dpi=None, ax_proj=None):
 
     return fig, ax
 
-
 #%%============================================================================
 def _upcast_dtype(x):
     '''
@@ -204,11 +203,13 @@ def _find_axes_lim(data_limit, tick_base_unit, direction='upper'):
         elif data_limit.size >= 3:
             raise LengthError('Length of `data_limit` should be at most 2.')
         else:
-            raise TypeError('`data_limit` should be a scalar or a tuple/list '
-                            'of length 2.')
+            raise TypeError(
+                '`data_limit` should be a scalar or a tuple/list of length 2.'
+            )
     else:
-        raise TypeError('`data_limit` should be a scalar or a tuple/list of '
-                        'length 2.')
+        raise TypeError(
+            '`data_limit` should be a scalar or a tuple/list of length 2.'
+        )
 
 #%%============================================================================
 class _FixedOrderFormatter(mpl.ticker.ScalarFormatter):
@@ -222,8 +223,9 @@ class _FixedOrderFormatter(mpl.ticker.ScalarFormatter):
     '''
     def __init__(self, order_of_mag=0, useOffset=True, useMathText=True):
         self._order_of_mag = order_of_mag
-        mpl.ticker.ScalarFormatter.__init__(self, useOffset=useOffset,
-                                            useMathText=useMathText)
+        mpl.ticker.ScalarFormatter.__init__(
+            self, useOffset=useOffset, useMathText=useMathText,
+        )
 
     def _set_orderOfMagnitude(self, range):
         """Over-riding this to avoid having orderOfMagnitude reset elsewhere"""
@@ -303,8 +305,10 @@ def _calc_r2_score(y_true, y_pred):
     return r2_score
 
 #%%============================================================================
-def __axes_styling_helper(ax, vert, rot, data_names, n_datasets, data_ax_label,
-                          name_ax_label, title):
+def __axes_styling_helper(
+        ax, vert, rot, data_names, n_datasets, data_ax_label,
+        name_ax_label, title,
+):
     '''
     Helper function. Used by _violin_plot_helper() and _multi_hist_helper().
 

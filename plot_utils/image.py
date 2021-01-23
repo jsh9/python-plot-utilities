@@ -52,11 +52,13 @@ def trim_img(
         import PIL
         import PIL.ImageOps
     except ImportError:
-        raise ImportError('\nPlease install PIL in order to use `trim_img()`.\n'
-                          'Install with conda (recommended):\n'
-                          '    >>> conda install PIL\n'
-                          'To install without conda, refer to:\n'
-                          '    http://www.pythonware.com/products/pil/')
+        raise ImportError(
+            '\nPlease install PIL in order to use `trim_img()`.\n'
+            'Install with conda (recommended):\n'
+            '    >>> conda install PIL\n'
+            'To install without conda, refer to:\n'
+            '    http://www.pythonware.com/products/pil/'
+        )
 
     if not isinstance(files,(list,tuple)):
         files = [files]
@@ -110,13 +112,14 @@ def trim_img(
                 print('  Original image file overwritten.')
 
 #%%============================================================================
-def pad_img(files, target_aspect_ratio=1.0, pad_color='white', inplace=False,
-            verbose=True, show_old_img=False, show_new_img=False,
-            forcibly_overwrite=False):
+def pad_img(
+        files, target_aspect_ratio=1.0, pad_color='white', inplace=False,
+        verbose=True, show_old_img=False, show_new_img=False,
+        forcibly_overwrite=False,
+):
     '''
     Pad empty edges to images so that they meet the target aspect ratio (i.e.,
-    more square). If an image already meets or exceeds the target aspect ratio,
-
+    more square).
 
     Parameters
     ----------
@@ -146,11 +149,13 @@ def pad_img(files, target_aspect_ratio=1.0, pad_color='white', inplace=False,
         import PIL
         import PIL.ImageOps
     except ImportError:
-        raise ImportError('\nPlease install PIL in order to use `trim_img()`.\n'
-                          'Install with conda (recommended):\n'
-                          '    >>> conda install PIL\n'
-                          'To install without conda, refer to:\n'
-                          '    http://www.pythonware.com/products/pil/')
+        raise ImportError(
+            '\nPlease install PIL in order to use `trim_img()`.\n'
+            'Install with conda (recommended):\n'
+            '    >>> conda install PIL\n'
+            'To install without conda, refer to:\n'
+            '    http://www.pythonware.com/products/pil/'
+        )
 
     if target_aspect_ratio > 1.0 :
         raise ValueError('`target_aspect_ratio should be <= 1.0.`')

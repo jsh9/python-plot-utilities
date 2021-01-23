@@ -33,10 +33,12 @@ proj_lib_error_msg = 'Due to a bug in conda, the environmental variable ' \
                      '(You only need to do this once.)'
 
 #%%============================================================================
-def choropleth_map_state(data_per_state, fig=None, ax=None, figsize=(10,7),
-                         dpi=100, vmin=None, vmax=None, map_title='USA map',
-                         unit='', cmap='OrRd', fontsize=14, cmap_midpoint=None,
-                         shapefile_dir=None):
+def choropleth_map_state(
+        data_per_state, fig=None, ax=None, figsize=(10,7),
+        dpi=100, vmin=None, vmax=None, map_title='USA map',
+        unit='', cmap='OrRd', fontsize=14, cmap_midpoint=None,
+        shapefile_dir=None,
+):
     '''
     Generate a choropleth map of the US (including Alaska and Hawaii), on a
     state level.
@@ -167,20 +169,26 @@ def choropleth_map_state(data_per_state, fig=None, ax=None, figsize=(10,7),
     fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
 
     # Lambert Conformal map of lower 48 states.
-    m = Basemap(llcrnrlon=-119, llcrnrlat=20, urcrnrlon=-64, urcrnrlat=49,
-                projection='lcc', lat_1=33, lat_2=45, lon_0=-95)
+    m = Basemap(
+        llcrnrlon=-119, llcrnrlat=20, urcrnrlon=-64, urcrnrlat=49,
+        projection='lcc', lat_1=33, lat_2=45, lon_0=-95,
+    )
 
     # Mercator projection, for Alaska and Hawaii
-    m_ = Basemap(llcrnrlon=-190, llcrnrlat=20, urcrnrlon=-143, urcrnrlat=46,
-                projection='merc', lat_ts=20)  # do not change these numbers
+    m_ = Basemap(
+        llcrnrlon=-190, llcrnrlat=20, urcrnrlon=-143, urcrnrlat=46,
+        projection='merc', lat_ts=20,  # do not change these numbers
+    )
 
     #---------   draw state boundaries  ----------------------------------------
     if shapefile_dir is None:
         shapefile_dir = pkg_resources.resource_filename('plot_utils', 'shapefiles/')
     shp_path_state = os.path.join(shapefile_dir, 'usa_states', 'st99_d00')
     try:
-        shp_info = m.readshapefile(shp_path_state, 'states', drawbounds=True,
-                                   linewidth=0.45, color='gray')
+        shp_info = m.readshapefile(
+            shp_path_state, 'states', drawbounds=True,
+            linewidth=0.45, color='gray',
+        )
         shp_info_ = m_.readshapefile(shp_path_state, 'states', drawbounds=False)
     except IOError:
         raise IOError('Shape files not found. Specify the location of the "shapefiles" folder.')
@@ -232,19 +240,27 @@ def choropleth_map_state(data_per_state, fig=None, ax=None, figsize=(10,7),
         if shapedict['NAME'] in ['Alaska', 'Hawaii']:
             seg = m_.states[int(shapedict['SHAPENUM'] - 1)]
             if shapedict['NAME']=='Hawaii' and float(shapedict['AREA'])>AREA_1:
-                seg = [(x + HI_OFFSET_X, y + HI_OFFSET_Y) for x, y in seg]
+                seg = [
+                    (x + HI_OFFSET_X, y + HI_OFFSET_Y)
+                    for x, y in seg
+                ]
             elif shapedict['NAME']=='Alaska' and float(shapedict['AREA'])>AREA_2:
-                seg = [(x*AK_SCALE + AK_OFFSET_X, y*AK_SCALE + AK_OFFSET_Y)\
-                       for x, y in seg]
+                seg = [
+                    (x * AK_SCALE + AK_OFFSET_X, y * AK_SCALE + AK_OFFSET_Y)
+                    for x, y in seg
+                ]
 
             if colors[statenames[nshape]] == None:
                 color = rgb2hex([0.93] * 3)
-                poly = Polygon(seg, facecolor=color, edgecolor='gray',
-                               linewidth=.45, hatch='\\')
+                poly = Polygon(
+                    seg, facecolor=color, edgecolor='gray',
+                    linewidth=.45, hatch='\\',
+                )
             else:
                 color = rgb2hex(colors[statenames[nshape]])
-                poly = Polygon(seg, facecolor=color, edgecolor='gray',
-                               linewidth=.45)
+                poly = Polygon(
+                    seg, facecolor=color, edgecolor='gray', linewidth=.45,
+                )
 
             ax.add_patch(poly)
 
@@ -252,20 +268,34 @@ def choropleth_map_state(data_per_state, fig=None, ax=None, figsize=(10,7),
 
     #---------  Plot bounding boxes for Alaska and Hawaii insets  --------------
     light_gray = [0.8] * 3
-    m_.plot(np.linspace(170, 177), np.linspace(29, 29), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(177, 180), np.linspace(29, 26), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(180, 180), np.linspace(26, 23), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(-180, -177), np.linspace(23, 20), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(-180, -175), np.linspace(26, 26), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(-175, -171), np.linspace(26, 22), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(-171, -171), np.linspace(22, 20), linewidth=1.,
-            color=light_gray, latlon=True)
+    m_.plot(
+        np.linspace(170, 177), np.linspace(29, 29), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(177, 180), np.linspace(29, 26), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(180, 180), np.linspace(26, 23), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(-180, -177), np.linspace(23, 20), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(-180, -175), np.linspace(26, 26), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(-175, -171), np.linspace(26, 22), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(-171, -171), np.linspace(22, 20), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
 
     #---------   Show color bar  ---------------------------------------
     if cmap_midpoint is None:
@@ -291,10 +321,12 @@ def choropleth_map_state(data_per_state, fig=None, ax=None, figsize=(10,7),
     return fig, ax  # return figure and axes handles
 
 #%%============================================================================
-def choropleth_map_county(data_per_county, fig=None, ax=None, figsize=(10,7),
-                          dpi=100, vmin=None, vmax=None, unit='', cmap='OrRd',
-                          map_title='USA county map', fontsize=14,
-                          cmap_midpoint=None, shapefile_dir=None):
+def choropleth_map_county(
+        data_per_county, fig=None, ax=None, figsize=(10,7),
+        dpi=100, vmin=None, vmax=None, unit='', cmap='OrRd',
+        map_title='USA county map', fontsize=14,
+        cmap_midpoint=None, shapefile_dir=None,
+    ):
     '''
     Generate a choropleth map of the US (including Alaska and Hawaii), on a
     county level.
@@ -398,26 +430,32 @@ def choropleth_map_county(data_per_county, fig=None, ax=None, figsize=(10,7),
             if 'FIPS_code' in data_per_county.columns:
                 data_per_county = data_per_county.set_index('FIPS_code')
             else:
-                raise ValueError('`data_per_county` should have a column '
-                                 'named "FIPS_code".')
+                raise ValueError(
+                    '`data_per_county` should have a column named "FIPS_code".'
+                )
             data_per_county = data_per_county.iloc[:,0].to_dict()
         else:  # more than two columns
             raise hlp.DimensionError('`data_per_county` should have only two columns.')
     elif isinstance(data_per_county,dict):
         pass
     else:
-        raise TypeError('`data_per_county` should be pandas.Series, '
-                        'pandas.DataFrame, or dict.')
+        raise TypeError(
+            '`data_per_county` should be pandas.Series, pandas.DataFrame, or dict.'
+        )
 
     fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
 
     # Lambert Conformal map of lower 48 states.
-    m = Basemap(llcrnrlon=-119, llcrnrlat=20, urcrnrlon=-64, urcrnrlat=49,
-                projection='lcc', lat_1=33, lat_2=45, lon_0=-95)
+    m = Basemap(
+        llcrnrlon=-119, llcrnrlat=20, urcrnrlon=-64, urcrnrlat=49,
+        projection='lcc', lat_1=33, lat_2=45, lon_0=-95,
+    )
 
     # Mercator projection, for Alaska and Hawaii
-    m_ = Basemap(llcrnrlon=-190, llcrnrlat=20, urcrnrlon=-143, urcrnrlat=46,
-                 projection='merc', lat_ts=20)  # do not change these numbers
+    m_ = Basemap(
+        llcrnrlon=-190, llcrnrlat=20, urcrnrlon=-143, urcrnrlat=46,
+        projection='merc', lat_ts=20,  # do not change these numbers
+    )
 
     #---------   draw state and county boundaries  ----------------------------
     if shapefile_dir is None:
@@ -428,22 +466,24 @@ def choropleth_map_county(data_per_county, fig=None, ax=None, figsize=(10,7),
                                    linewidth=0.45, color='gray')
         shp_info_ = m_.readshapefile(shp_path_state, 'states', drawbounds=False)
     except IOError:
-        raise IOError('Shape files not found. Specify the location of the '
-                      '"shapefiles" folder.')
+        raise IOError(
+            'Shape files not found. Specify the location of the "shapefiles" folder.'
+        )
 
     cbc = [0.75] * 3  # county boundary color
     cbw = 0.15  # county boundary line width
     shp_path_county = os.path.join(shapefile_dir, 'usa_counties', 'cb_2016_us_county_500k')
     try:
-        shp_info_cnty = m.readshapefile(shp_path_county, 'counties',
-                                        drawbounds=True, linewidth=cbw,
-                                        color=cbc)
-
-        shp_info_cnty_ = m_.readshapefile(shp_path_county, 'counties',
-                                          drawbounds=False)
+        shp_info_cnty = m.readshapefile(
+            shp_path_county, 'counties', drawbounds=True, linewidth=cbw, color=cbc,
+        )
+        shp_info_cnty_ = m_.readshapefile(
+            shp_path_county, 'counties', drawbounds=False,
+        )
     except IOError:
-        raise IOError('Shape files not found. Specify the location of the '
-                      '"shapefiles" folder.')
+        raise IOError(
+            'Shape files not found. Specify the location of the "shapefiles" folder.'
+        )
 
     #-------- choose a color for each county based on unemployment rate -------
     colors={}
@@ -480,7 +520,7 @@ def choropleth_map_county(data_per_county, fig=None, ax=None, figsize=(10,7),
         if shapedict['STATEFP'] not in ['02','15']:  # not Alaska or Hawaii
             if colors[county_FIPS_code_list[j]] == None:
                 color = rgb2hex([0.93] * 3)
-                poly = Polygon(seg, facecolor=color, edgecolor=color)#,hatch='\\')
+                poly = Polygon(seg, facecolor=color, edgecolor=color)
             else:
                 color = rgb2hex(colors[county_FIPS_code_list[j]])
                 poly = Polygon(seg, facecolor=color, edgecolor=color)
@@ -489,11 +529,13 @@ def choropleth_map_county(data_per_county, fig=None, ax=None, figsize=(10,7),
     for j, seg in enumerate(m_.counties):  # for Alaska and Hawaii
         shapedict = m.counties_info[j]  # query shape dict at j-th position
         if shapedict['STATEFP'] == '02':  # Alaska
-            seg = [(x * AK_SCALE + AK_OFFSET_X, y * AK_SCALE + AK_OFFSET_Y)\
-                   for x,y in seg]
+            seg = [
+                (x * AK_SCALE + AK_OFFSET_X, y * AK_SCALE + AK_OFFSET_Y)
+                for x, y in seg
+            ]
             if colors[county_FIPS_code_list[j]] == None:
                 color = rgb2hex([0.93]*3)
-                poly = Polygon(seg, facecolor=color, edgecolor=cbc, lw=cbw)#,hatch='\\')
+                poly = Polygon(seg, facecolor=color, edgecolor=cbc, lw=cbw)
             else:
                 color = rgb2hex(colors[county_FIPS_code_list[j]])
                 poly = Polygon(seg, facecolor=color, edgecolor=cbc, lw=cbw)
@@ -501,8 +543,8 @@ def choropleth_map_county(data_per_county, fig=None, ax=None, figsize=(10,7),
         if shapedict['STATEFP'] == '15':  # Hawaii
             seg = [(x + HI_OFFSET_X, y + HI_OFFSET_Y) for x, y in seg]
             if colors[county_FIPS_code_list[j]] == None:
-                color = rgb2hex([0.93]*3)
-                poly = Polygon(seg, facecolor=color, edgecolor=cbc, lw=cbw)#,hatch='\\')
+                color = rgb2hex([0.93] * 3)
+                poly = Polygon(seg, facecolor=color, edgecolor=cbc, lw=cbw)
             else:
                 color = rgb2hex(colors[county_FIPS_code_list[j]])
                 poly = Polygon(seg, facecolor=color, edgecolor=cbc, lw=cbw)
@@ -512,20 +554,34 @@ def choropleth_map_county(data_per_county, fig=None, ax=None, figsize=(10,7),
 
     #------------  Plot bounding boxes for Alaska and Hawaii insets  --------------
     light_gray = [0.8] * 3
-    m_.plot(np.linspace(170, 177), np.linspace(29, 29), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(177, 180), np.linspace(29, 26), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(180, 180), np.linspace(26, 23), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(-180, -177), np.linspace(23, 20), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(-180, -175), np.linspace(26, 26), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(-175, -171), np.linspace(26, 22), linewidth=1.,
-            color=light_gray, latlon=True)
-    m_.plot(np.linspace(-171, -171), np.linspace(22, 20), linewidth=1.,
-            color=light_gray, latlon=True)
+    m_.plot(
+        np.linspace(170, 177), np.linspace(29, 29), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(177, 180), np.linspace(29, 26), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(180, 180), np.linspace(26, 23), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(-180, -177), np.linspace(23, 20), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(-180, -175), np.linspace(26, 26), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(-175, -171), np.linspace(26, 22), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
+    m_.plot(
+        np.linspace(-171, -171), np.linspace(22, 20), linewidth=1.,
+        color=light_gray, latlon=True,
+    )
 
     #------------   Show color bar   ---------------------------------------
     if cmap_midpoint is None:
@@ -606,17 +662,19 @@ def _convert_FIPS_to_state_name(dict1):
     '''
     assert(isinstance(dict1, dict))
 
-    fips2state = {"01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA", \
-              "08": "CO", "09": "CT", "10": "DE", "11": "DC", "12": "FL", \
-              "13": "GA", "15": "HI", "16": "ID", "17": "IL", "18": "IN", \
-              "19": "IA", "20": "KS", "21": "KY", "22": "LA", "23": "ME", \
-              "24": "MD", "25": "MA", "26": "MI", "27": "MN", "28": "MS", \
-              "29": "MO", "30": "MT", "31": "NE", "32": "NV", "33": "NH", \
-              "34": "NJ", "35": "NM", "36": "NY", "37": "NC", "38": "ND", \
-              "39": "OH", "40": "OK", "41": "OR", "42": "PA", "44": "RI", \
-              "45": "SC", "46": "SD", "47": "TN", "48": "TX", "49": "UT", \
-              "50": "VT", "51": "VA", "53": "WA", "54": "WV", "55": "WI", \
-              "56": "WY"}  # dictionary mapping FIPS code to state abbreviation
+    fips2state = {
+        "01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA",
+        "08": "CO", "09": "CT", "10": "DE", "11": "DC", "12": "FL",
+        "13": "GA", "15": "HI", "16": "ID", "17": "IL", "18": "IN",
+        "19": "IA", "20": "KS", "21": "KY", "22": "LA", "23": "ME",
+        "24": "MD", "25": "MA", "26": "MI", "27": "MN", "28": "MS",
+        "29": "MO", "30": "MT", "31": "NE", "32": "NV", "33": "NH",
+        "34": "NJ", "35": "NM", "36": "NY", "37": "NC", "38": "ND",
+        "39": "OH", "40": "OK", "41": "OR", "42": "PA", "44": "RI",
+        "45": "SC", "46": "SD", "47": "TN", "48": "TX", "49": "UT",
+        "50": "VT", "51": "VA", "53": "WA", "54": "WV", "55": "WI",
+        "56": "WY",  # dictionary mapping FIPS code to state abbreviation
+    }
 
     dict2 = {}  # create empty dict
     for FIPS_code in dict1:
@@ -786,17 +844,17 @@ def _check_all_states(dict1):
     assert(type(dict1) == dict)
 
     full_state_list = [
-         'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
-         'Connecticut', 'Delaware', 'District of Columbia', 'Florida',
-         'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas',
-         'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts',
-         'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana',
-         'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico',
-         'New York', 'North Carolina', 'North Dakota', 'Ohio',
-         'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
-         'South Carolina', 'South Dakota', 'Tennessee', 'Texas','Utah',
-         'Vermont', 'Virginia', 'Washington', 'West Virginia',
-         'Wisconsin', 'Wyoming'
+        'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado',
+        'Connecticut', 'Delaware', 'District of Columbia', 'Florida',
+        'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas',
+        'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts',
+        'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana',
+        'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico',
+        'New York', 'North Carolina', 'North Dakota', 'Ohio',
+        'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
+        'South Carolina', 'South Dakota', 'Tennessee', 'Texas','Utah',
+        'Vermont', 'Virginia', 'Washington', 'West Virginia',
+        'Wisconsin', 'Wyoming',
     ]
 
     if dict1.keys() != set(full_state_list):

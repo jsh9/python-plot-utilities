@@ -68,18 +68,22 @@ def missing_value_counts(X, fig=None, ax=None, figsize=None, dpi=100, rot=45):
 
     for j, col in enumerate(null_counts.index):
         if null_counts[col] != 0:  # show count of missing values on top of bars
-            plt.text(j, null_counts[col] + alpha, str(null_counts[col]),
-                     ha='center', va='bottom', rotation=90)
+            plt.text(
+                j, null_counts[col] + alpha, str(null_counts[col]),
+                ha='center', va='bottom', rotation=90,
+            )
 
     return fig, ax, null_counts
 
 #%%============================================================================
-def histogram3d(X, bins=10, fig=None, ax=None, figsize=(8,4), dpi=100,
-                elev=30, azim=5, alpha=0.6, data_labels=None,
-                plot_legend=True, plot_xlabel=False, color=None,
-                dx_factor=0.4, dy_factor=0.8,
-                ylabel='Data', zlabel='Counts',
-                **legend_kwargs):
+def histogram3d(
+        X, bins=10, fig=None, ax=None, figsize=(8,4), dpi=100,
+        elev=30, azim=5, alpha=0.6, data_labels=None,
+        plot_legend=True, plot_xlabel=False, color=None,
+        dx_factor=0.4, dy_factor=0.8,
+        ylabel='Data', zlabel='Counts',
+        **legend_kwargs,
+):
     '''
     Plot 3D histograms. 3D histograms are best used to compare the distribution
     of more than one set of data.
@@ -201,14 +205,16 @@ def histogram3d(X, bins=10, fig=None, ax=None, figsize=(8,4), dpi=100,
     elif len(list(X)) > 1:  # adding list() to X to make sure len() does not throw an error
         N = len(X)  # number of separate distribution to be compared
     else:  # X is a scalar
-        raise TypeError('`X` must be a list, 2D numpy array, or pandas '
-                        'Series/DataFrame.')
+        raise TypeError(
+            '`X` must be a list, 2D numpy array, or pandas Series/DataFrame.'
+        )
 
     #------------  NaN checking for X  ----------------------------------------
     for j in range(N):
         if not all(np.isfinite(X[j])):
-            raise ValueError('X[%d] contains non-finite values (not accepted '
-                             'by `histogram3d()`).' % j)
+            raise ValueError(
+                f'X[{j}] contains non-finite values (not accepted by `histogram3d()`).'
+            )
 
     if data_labels is None:
         data_labels = [[None]] * N
@@ -260,8 +266,9 @@ def histogram3d(X, bins=10, fig=None, ax=None, figsize=(8,4), dpi=100,
 
     #-------------- Legends, labels, etc. -------------------------------------
     if plot_legend is True:
-        default_kwargs = {'loc':9, 'fancybox':True, 'framealpha':0.5,
-                          'ncol':N, 'fontsize':10}
+        default_kwargs = {
+            'loc':9, 'fancybox':True, 'framealpha':0.5, 'ncol':N, 'fontsize':10,
+        }
         if legend_kwargs == {}:
             legend_kwargs.update(default_kwargs)
         else:  # if user provides some keyword arguments
@@ -284,8 +291,10 @@ def histogram3d(X, bins=10, fig=None, ax=None, figsize=(8,4), dpi=100,
     return fig, ax
 
 #%%============================================================================
-def correlation_matrix(X, color_map='RdBu_r', fig=None, ax=None, figsize=None,
-                      dpi=100, variable_names=None, rot=45, scatter_plots=False):
+def correlation_matrix(
+        X, color_map='RdBu_r', fig=None, ax=None, figsize=None,
+        dpi=100, variable_names=None, rot=45, scatter_plots=False,
+):
     '''
     Plot correlation matrix of a dataset ``X``, whose columns are different
     variables (or a sample of a certain random variable).
@@ -372,10 +381,12 @@ def correlation_matrix(X, color_map='RdBu_r', fig=None, ax=None, figsize=None,
     return fig, ax, correlations
 
 #%%============================================================================
-def violin_plot(X, fig=None, ax=None, figsize=None, dpi=100, nan_warning=False,
-                showmeans=True, showextrema=False, showmedians=False, vert=True,
-                data_names=[], rot=45, name_ax_label=None, data_ax_label=None,
-                sort_by=None, title=None, **violinplot_kwargs):
+def violin_plot(
+        X, fig=None, ax=None, figsize=None, dpi=100, nan_warning=False,
+        showmeans=True, showextrema=False, showmedians=False, vert=True,
+        data_names=[], rot=45, name_ax_label=None, data_ax_label=None,
+        sort_by=None, title=None, **violinplot_kwargs,
+):
     '''
     Generate violin plots for each data set within ``X``.
 
@@ -460,19 +471,22 @@ def violin_plot(X, fig=None, ax=None, figsize=None, dpi=100, nan_warning=False,
     '''
     _check_violin_plot_or_hist_multi_input(X, data_names, nan_warning)
 
-    data, data_names, n_datasets = _preprocess_violin_plot_data(X,
-                                                      data_names=data_names,
-                                                      nan_warning=nan_warning)
+    data, data_names, n_datasets = _preprocess_violin_plot_data(
+        X, data_names=data_names, nan_warning=nan_warning,
+    )
 
-    data_with_names = _prepare_violin_plot_data(data, data_names,
-                                                sort_by=sort_by, vert=vert)
+    data_with_names = _prepare_violin_plot_data(
+        data, data_names, sort_by=sort_by, vert=vert,
+    )
 
-    fig, ax = _violin_plot_helper(data_with_names, fig=fig, ax=ax,
-                                  figsize=figsize, dpi=dpi, showmeans=showmeans,
-                                  showmedians=showmedians, vert=vert, rot=rot,
-                                  data_ax_label=data_ax_label,
-                                  name_ax_label=name_ax_label,
-                                  title=title, **violinplot_kwargs)
+    fig, ax = _violin_plot_helper(
+        data_with_names, fig=fig, ax=ax,
+        figsize=figsize, dpi=dpi, showmeans=showmeans,
+        showmedians=showmedians, vert=vert, rot=rot,
+        data_ax_label=data_ax_label,
+        name_ax_label=name_ax_label,
+        title=title, **violinplot_kwargs,
+    )
 
     return fig, ax
 
@@ -482,8 +496,9 @@ def _check_violin_plot_or_hist_multi_input(X, data_names, nan_warning):
     Check that the input, `X`, for violin_plot() or hist_multi() is valid.
     '''
     if not isinstance(X, (pd.DataFrame, pd.Series, np.ndarray, dict, list)):
-        raise TypeError('`X` must be pandas.DataFrame, pandas.Series, '
-                        'np.ndarray, dict, or list.')
+        raise TypeError(
+            '`X` must be pandas.DataFrame, pandas.Series, np.ndarray, dict, or list.'
+        )
     if not isinstance(data_names, (list, type(None))):
         raise TypeError('`data_names` must be a list of names, empty list, or None.')
     if nan_warning and isinstance(X, (pd.DataFrame, pd.Series)) and X.isnull().any().any():
@@ -536,11 +551,15 @@ def _preprocess_violin_plot_data(X, data_names=None, nan_warning=False):
             elif isinstance(x, list):
                 x_ = np.array(x)
             else:
-                raise TypeError('Unknown data type in X["%s"]. Should be either '
-                                'pandas.Series, 1D numpy array, or a list.' % key)
+                raise TypeError(
+                    'Unknown data type in X["%s"]. Should be either '
+                    'pandas.Series, 1D numpy array, or a list.' % key
+                )
             if nan_warning and np.isnan(x_).any():
-                print('WARNING in violin_plot() or hist_multi(): '
-                      'X[%s] contains NaN values.' % key)
+                print(
+                    'WARNING in violin_plot() or hist_multi(): '
+                    'X[%s] contains NaN values.' % key
+                )
             data.append(x_[np.isfinite(x_)])
 
     if not data_names and isinstance(X, dict):
@@ -604,17 +623,22 @@ def _prepare_violin_plot_data(data, data_names, sort_by=None, vert=False):
         else:  # for "not vert" histograms, we want the first data set on top
             sorted_list = data_with_names[::-1]
     elif sort_by == 'name':
-        sorted_list = sorted(data_with_names, key=lambda x: x[0],
-                             reverse=reverse)
+        sorted_list = sorted(
+            data_with_names, key=lambda x: x[0], reverse=reverse,
+        )
     elif sort_by == 'mean':
-        sorted_list = sorted(data_with_names, key=lambda x: np.mean(x[1]),
-                             reverse=reverse)
+        sorted_list = sorted(
+            data_with_names, key=lambda x: np.mean(x[1]), reverse=reverse,
+        )
     elif sort_by == 'median':
-        sorted_list = sorted(data_with_names, key=lambda x: np.median(x[1]),
-                             reverse=reverse)
+        sorted_list = sorted(
+            data_with_names, key=lambda x: np.median(x[1]), reverse=reverse,
+        )
     else:
-        raise NameError("`sort_by` must be one of {`None`, 'name', 'mean', "
-                        "'median'}, not '%s'." % sort_by)
+        raise NameError(
+            "`sort_by` must be one of {`None`, 'name', 'mean', "
+            "'median'}, not '%s'." % sort_by
+        )
 
     data_with_names_dict = OrderedDict()
     for j in range(n):
@@ -623,11 +647,13 @@ def _prepare_violin_plot_data(data, data_names, sort_by=None, vert=False):
     return data_with_names_dict
 
 #%%============================================================================
-def _violin_plot_helper(data_with_names, fig=None, ax=None, figsize=None,
-                        dpi=100, showmeans=True, showextrema=False,
-                        showmedians=False, vert=False, rot=45,
-                        data_ax_label=None, name_ax_label=None, title=None,
-                        **violinplot_kwargs):
+def _violin_plot_helper(
+        data_with_names, fig=None, ax=None, figsize=None,
+        dpi=100, showmeans=True, showextrema=False,
+        showmedians=False, vert=False, rot=45,
+        data_ax_label=None, name_ax_label=None, title=None,
+        **violinplot_kwargs,
+):
     '''
     Helper function for violin plot.
 
@@ -651,19 +677,25 @@ def _violin_plot_helper(data_with_names, fig=None, ax=None, figsize=None,
         figsize = (l1, l2) if vert else (l2, l1)
 
     fig, ax = hlp._process_fig_ax_objects(fig, ax, figsize, dpi)
-    ax.violinplot(data, vert=vert, showmeans=showmeans, showextrema=showextrema,
-                  showmedians=showmedians, **violinplot_kwargs)
-    ax = hlp.__axes_styling_helper(ax, vert, rot, data_names, n_datasets,
-                                   data_ax_label, name_ax_label, title)
+    ax.violinplot(
+        data, vert=vert, showmeans=showmeans, showextrema=showextrema,
+        showmedians=showmedians, **violinplot_kwargs,
+    )
+    ax = hlp.__axes_styling_helper(
+        ax, vert, rot, data_names, n_datasets,
+        data_ax_label, name_ax_label, title,
+    )
     return fig, ax
 
 #%%============================================================================
-def hist_multi(X, bins=10, fig=None, ax=None, figsize=None, dpi=100,
-               nan_warning=False, showmeans=True, showmedians=False, vert=True,
-               data_names=[], rot=45, name_ax_label=None, data_ax_label=None,
-               sort_by=None, title=None, show_vals=True, show_pct_diff=False,
-               baseline_data_index=0, legend_loc='best',
-               show_counts_on_data_ax=True, **extra_kwargs):
+def hist_multi(
+        X, bins=10, fig=None, ax=None, figsize=None, dpi=100,
+        nan_warning=False, showmeans=True, showmedians=False, vert=True,
+        data_names=[], rot=45, name_ax_label=None, data_ax_label=None,
+        sort_by=None, title=None, show_vals=True, show_pct_diff=False,
+        baseline_data_index=0, legend_loc='best',
+        show_counts_on_data_ax=True, **extra_kwargs,
+):
     '''
     Generate multiple histograms, one for each data set within ``X``.
 
@@ -780,29 +812,33 @@ def hist_multi(X, bins=10, fig=None, ax=None, figsize=None, dpi=100,
         all_X_min = np.min(flattened_data)
         bins = np.linspace(all_X_min, all_X_max, num=bins, endpoint=True)
 
-    fig, ax = _hist_multi_helper(data_with_names, bins=bins, fig=fig, ax=ax,
-                                 figsize=figsize, dpi=dpi, showmeans=showmeans,
-                                 showmedians=showmedians, vert=vert, rot=rot,
-                                 data_ax_label=data_ax_label,
-                                 name_ax_label=name_ax_label,
-                                 title=title, show_vals=show_vals,
-                                 show_pct_diff=show_pct_diff,
-                                 baseline_data_index=baseline_data_index,
-                                 legend_loc=legend_loc,
-                                 show_counts_on_data_ax=show_counts_on_data_ax,
-                                 **extra_kwargs)
+    fig, ax = _hist_multi_helper(
+        data_with_names, bins=bins, fig=fig, ax=ax,
+        figsize=figsize, dpi=dpi, showmeans=showmeans,
+        showmedians=showmedians, vert=vert, rot=rot,
+        data_ax_label=data_ax_label,
+        name_ax_label=name_ax_label,
+        title=title, show_vals=show_vals,
+        show_pct_diff=show_pct_diff,
+        baseline_data_index=baseline_data_index,
+        legend_loc=legend_loc,
+        show_counts_on_data_ax=show_counts_on_data_ax,
+        **extra_kwargs,
+    )
 
     return fig, ax
 
 #%%============================================================================
-def _hist_multi_helper(data_with_names, bins=10, fig=None, ax=None,
-                       figsize=None, dpi=100, showmeans=True, showmedians=False,
-                       vert=False, rot=45, data_ax_label=None,
-                       name_ax_label=None, show_legend=True, title=None,
-                       show_vals=True, show_pct_diff=False,
-                       baseline_data_index=0, legend_loc='best',
-                       show_counts_on_data_ax=True,
-                       **extra_kwargs):
+def _hist_multi_helper(
+        data_with_names, bins=10, fig=None, ax=None,
+        figsize=None, dpi=100, showmeans=True, showmedians=False,
+        vert=False, rot=45, data_ax_label=None,
+        name_ax_label=None, show_legend=True, title=None,
+        show_vals=True, show_pct_diff=False,
+        baseline_data_index=0, legend_loc='best',
+        show_counts_on_data_ax=True,
+        **extra_kwargs,
+):
     '''
     Helper function to multi_hist().
 
@@ -850,9 +886,11 @@ def _hist_multi_helper(data_with_names, bins=10, fig=None, ax=None,
         extra_kwarg = {'bottom': i + 1} if not vert else {'left': i + 1}
 
         plot_bar_func = ax.bar if not vert else ax.barh  # flipped compared to violin plot!
-        plot_bar_func(bin_centers, bar_heights,
-                      bar_full_width * 0.9,  # leave some space between bars
-                      align='center', alpha=0.75, lw=0.5, ec='w', **extra_kwarg)
+        plot_bar_func(
+            bin_centers, bar_heights,
+            bar_full_width * 0.9,  # leave some space between bars
+            align='center', alpha=0.75, lw=0.5, ec='w', **extra_kwarg,
+        )
 
         mbl = 0.8  # mean/median bar length
         if showmeans:
@@ -860,21 +898,29 @@ def _hist_multi_helper(data_with_names, bins=10, fig=None, ax=None,
             mean_vals.append(mean_val)
             label_1 = 'mean' if i == 0 else None
             if vert:
-                ax.plot([i+1, i+1+mbl], [mean_val] * 2, c='k', label=label_1,
-                        alpha=0.6)
+                ax.plot(
+                    [i+1, i+1+mbl], [mean_val] * 2, c='k', label=label_1,
+                    alpha=0.6,
+                )
             else:
-                ax.plot([mean_val] * 2, [i+1, i+1+mbl], c='k', label=label_1,
-                        alpha=0.6)
+                ax.plot(
+                    [mean_val] * 2, [i+1, i+1+mbl], c='k', label=label_1,
+                    alpha=0.6,
+                )
         if showmedians:
             median_val = np.median(data_i)
             median_vals.append(median_val)
             label_2 = 'median' if i == 0 else None
             if vert:
-                ax.plot([i+1, i+1+mbl], [median_val] * 2, c='k', ls='--',
-                        alpha=0.6, label=label_2)
+                ax.plot(
+                    [i+1, i+1+mbl], [median_val] * 2, c='k', ls='--',
+                    alpha=0.6, label=label_2,
+                )
             else:
-                ax.plot([median_val] * 2, [i+1, i+1+mbl], c='k', ls='--',
-                        alpha=0.6, label=label_2)
+                ax.plot(
+                    [median_val] * 2, [i+1, i+1+mbl], c='k', ls='--',
+                    alpha=0.6, label=label_2,
+                )
 
     #~~~~~~~~~~ Print values of mean and/or median ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     if show_vals and (len(mean_vals) > 0 or len(median_vals) > 0):
@@ -958,14 +1004,16 @@ def _hist_multi_helper(data_with_names, bins=10, fig=None, ax=None,
 
     if show_legend:
         ax.legend(loc=legend_loc)
-    ax = hlp.__axes_styling_helper(ax, vert, rot, data_names, n_datasets,
-                                   data_ax_label, name_ax_label, title)
+    ax = hlp.__axes_styling_helper(
+        ax, vert, rot, data_names, n_datasets,
+        data_ax_label, name_ax_label, title,
+    )
 
     if show_counts_on_data_ax:
 
-        def get_ticks_and_labels(n_datasets_,
-                                 max_count_each_dataset,
-                                 max_relative_bar_height):
+        def get_ticks_and_labels(
+            n_datasets_, max_count_each_dataset, max_relative_bar_height,
+        ):
             ticks = []
             tick_labels = []
             for i in range(n_datasets_):
@@ -978,9 +1026,9 @@ def _hist_multi_helper(data_with_names, bins=10, fig=None, ax=None,
         if not vert:
             ax2 = ax.twinx()
             ax2.set_ylabel('Counts')
-            ticks, tick_labels = get_ticks_and_labels(n_datasets,
-                                                      max_count_each_dataset,
-                                                      MAX_RELATIVE_BAR_HEIGHT)
+            ticks, tick_labels = get_ticks_and_labels(
+                n_datasets, max_count_each_dataset, MAX_RELATIVE_BAR_HEIGHT,
+            )
             ax2.set_yticks(ticks)
             ax2.set_yticklabels(tick_labels)
             ax.set_ylim(1, n_datasets + 1)
@@ -988,9 +1036,9 @@ def _hist_multi_helper(data_with_names, bins=10, fig=None, ax=None,
         else:
             ax2 = ax.twiny()
             ax2.set_xlabel('Counts')
-            ticks, tick_labels = get_ticks_and_labels(n_datasets,
-                                                      max_count_each_dataset,
-                                                      MAX_RELATIVE_BAR_HEIGHT)
+            ticks, tick_labels = get_ticks_and_labels(
+                n_datasets, max_count_each_dataset, MAX_RELATIVE_BAR_HEIGHT,
+            )
             ax2.set_xticks(ticks)
             ax2.set_xticklabels(tick_labels, rotation=45)
             ax.set_xlim(1, n_datasets + 1)
